@@ -1,0 +1,20 @@
+{
+  "contractName": "StakingStandalone",
+  "address": "0x9EDb752c8Afae710c637Fe08ca0f822AEaEcbE8D",
+  "constructorArgs": "000000000000000000000000b6fa6e89479c2a312b6bbebd3db06f4832cce04a",
+  "compilerVersion": "v0.8.20+commit.a1b79de6",
+  "optimization": true,
+  "runs": 200,
+  "evmVersion": "london",
+  "network": "Base Mainnet",
+  "chainId": 8453,
+  "project": {
+    "name": "Based Dayana",
+    "symbol": "DAYA",
+    "website": "https://www.baseddayana.xyz",
+    "twitter": "https://x.com/BasedDayana",
+    "telegram": "https://t.me/based_dayana",
+    "github": "https://github.com/baseddayana-tech/baseddayana-contracts",
+    "description": "BASED DAYANA ($DAYA) is a revolutionary DeFi project building a comprehensive ecosystem for staking, governance, and exclusive rewards on the Base blockchain."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "dayana-remix-deployment",
+  "version": "1.0.0",
+  "description": "Despliegue de contratos Dayana usando Remix API",
+  "main": "deploy-remix.js",
+  "scripts": {
+    "deploy": "node deploy-remix.js",
+    "verify": "node verify-contracts.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "ethers": "^6.15.0",
+    "fs-extra": "^11.0.0",
+    "solc": "^0.8.20",
+    "web3": "^4.0.0"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "remix",
+    "deployment",
+    "base"
+  ],
+  "author": "Dayana Team",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^4.1.17"
+  }
+}

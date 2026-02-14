@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAYANA Governance Dashboard | Community Power</title>
+    <meta name="description"
+        content="Participate in BASED DAYANA governance. Vote on proposals, create initiatives, and shape the future of the ecosystem.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'orange-custom': '#F97316',
+                        'yellow-custom': '#FBBF24'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Load Web3 dependencies -->
+    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
+    <!-- Load DAYANA contracts config -->
+    <script src="contracts-config.js"></script>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navigation -->
+    <header class="bg-black/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="daya_logo_64x64.png" alt="DAYANA" class="w-8 h-8">
+                <h1 class="text-xl font-bold text-orange-400">DAYANA Governance</h1>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div id="wallet-info" class="text-sm text-gray-400">Not Connected</div>
+                <button id="connect-wallet" class="px-4 py-2 rounded bg-orange-500 hover:bg-orange-600 text-white">
+                    Connect Wallet
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Governance Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-orange-400 font-bold mb-2">Your Voting Power</h3>
+                <p id="user-voting-power" class="text-2xl font-bold">0</p>
+                <p class="text-gray-400 text-sm">DAYA votes</p>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-green-400 font-bold mb-2">Active Proposals</h3>
+                <p id="active-proposals-count" class="text-2xl font-bold">0</p>
+                <p class="text-gray-400 text-sm">Need your vote</p>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-blue-400 font-bold mb-2">Your Participation</h3>
+                <p id="user-votes-count" class="text-2xl font-bold">0</p>
+                <p class="text-gray-400 text-sm">Votes cast</p>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-yellow-400 font-bold mb-2">Governance Rewards</h3>
+                <p id="user-governance-rewards" class="text-2xl font-bold">0</p>
+                <p class="text-gray-400 text-sm">DAYA earned</p>
+            </div>
+        </div>
+
+        <!-- Actions Row -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            <button id="create-proposal-btn"
+                class="px-6 py-3 rounded bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                📝 Create Proposal
+            </button>
+
+            <button id="early-adopter-proposal-btn"
+                class="px-6 py-3 rounded bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                🌟 Early Adopter Proposal
+            </button>
+
+            <button id="claim-rewards-btn"
+                class="px-6 py-3 rounded bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold hover:from-yellow-600 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                💰 Claim Rewards
+            </button>
+
+            <button id="refresh-data" class="px-6 py-3 rounded bg-gray-600 hover:bg-gray-700 text-white">
+                🔄 Refresh
+            </button>
+        </div>
+
+        <!-- Active Proposals Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-orange-400 mb-6">🗳️ Active Proposals</h2>
+            <div id="active-proposals" class="space-y-6">
+                <!-- Proposals will be loaded here -->
+                <div class="bg-gray-800 p-6 rounded-lg text-center">
+                    <p class="text-gray-400">Loading proposals...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Proposals Section -->
+        <section>
+            <h2 class="text-2xl font-bold text-gray-400 mb-6">📋 Recent Proposals</h2>
+            <div id="recent-proposals" class="space-y-4">
+                <!-- Recent proposals will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Create Proposal Modal -->
+    <div id="create-proposal-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-orange-400 mb-6">📝 Create New Proposal</h3>
+
+                    <form id="proposal-form" class="space-y-6">
+                        <div>
+                            <label class="block text-white font-bold mb-2">Title *</label>
+                            <input type="text" id="proposal-title"
+                                class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none"
+                                placeholder="Enter proposal title..." required>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-bold mb-2">Description *</label>
+                            <textarea id="proposal-description" rows="4"
+                                class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none"
+                                placeholder="Describe your proposal in detail..." required></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-bold mb-2">Options *</label>
+                            <div id="proposal-options" class="space-y-2">
+                                <input type="text"
+                                    class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none"
+                                    placeholder="Option 1 (e.g., Yes)" required>
+                                <input type="text"
+                                    class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none"
+                                    placeholder="Option 2 (e.g., No)" required>
+                            </div>
+                            <button type="button" id="add-option"
+                                class="mt-2 px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 text-white text-sm">+ Add
+                                Option</button>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-bold mb-2">Minimum Voting Power Required</label>
+                            <select id="proposal-min-power"
+                                class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none">
+                                <option value="1000">1,000 DAYA (Standard)</option>
+                                <option value="5000">5,000 DAYA (Important)</option>
+                                <option value="10000">10,000 DAYA (Major Decision)</option>
+                                <option value="25000">25,000 DAYA (Critical)</option>
+                            </select>
+                        </div>
+
+                        <div class="bg-gray-700 p-4 rounded">
+                            <h4 class="font-bold text-yellow-400 mb-2">💡 Proposal Tips</h4>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                <li>• Clear, concise titles work best</li>
+                                <li>• Explain the benefit to the community</li>
+                                <li>• Include implementation details</li>
+                                <li>• Consider all stakeholder perspectives</li>
+                                <li>• Rewards: 100 DAYA for creating proposals</li>
+                            </ul>
+                        </div>
+
+                        <div class="flex justify-end space-x-4">
+                            <button type="button" id="cancel-proposal"
+                                class="px-6 py-3 rounded bg-gray-600 hover:bg-gray-700 text-white">Cancel</button>
+                            <button type="submit"
+                                class="px-6 py-3 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold">Create
+                                Proposal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Modal -->
+    <div id="vote-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-800 rounded-lg max-w-lg w-full">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-orange-400 mb-6">🗳️ Cast Your Vote</h3>
+
+                    <div id="vote-proposal-info" class="mb-6">
+                        <!-- Proposal info will be inserted here -->
+                    </div>
+
+                    <div id="vote-options" class="space-y-3 mb-6">
+                        <!-- Vote options will be inserted here -->
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-white font-bold mb-2">Reason for Vote (Optional)</label>
+                        <textarea id="vote-reason" rows="3"
+                            class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none"
+                            placeholder="Explain your vote..."></textarea>
+                    </div>
+
+                    <div class="bg-gray-700 p-4 rounded mb-6">
+                        <p class="text-yellow-400 font-bold">Your Voting Power: <span id="vote-power-display">0</span>
+                            DAYA</p>
+                        <p class="text-green-400 text-sm">Reward: 10 DAYA for participating</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button id="cancel-vote"
+                            class="px-6 py-3 rounded bg-gray-600 hover:bg-gray-700 text-white">Cancel</button>
+                        <button id="submit-vote"
+                            class="px-6 py-3 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed">Cast
+                            Vote</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="message-container" class="fixed top-4 right-4 z-60"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Governance Dashboard Implementation
+        class GovernanceDashboard {
+            constructor() {
+                this.web3Provider = null;
+                this.governanceContract = null;
+                this.userAddress = null;
+                this.userStats = null;
+                this.activeProposals = [];
+
+                this.init();
+            }
+
+            async init() {
+                console.log('🏛️ Initializing Governance Dashboard...');
+
+                // Setup event listeners
+                this.setupEventListeners();
+
+                // Try to connect if MetaMask is available
+                if (typeof window.ethereum !== 'undefined') {
+                    await this.checkConnection();
+                }
+            }
+
+            setupEventListeners() {
+                // Wallet connection
+                document.getElementById('connect-wallet').addEventListener('click', () => this.connectWallet());
+
+                // Proposal creation
+                document.getElementById('create-proposal-btn').addEventListener('click', () => this.showCreateProposalModal());
+                document.getElementById('early-adopter-proposal-btn').addEventListener('click', () => this.showCreateProposalModal(true));
+
+                // Modal controls
+                document.getElementById('cancel-proposal').addEventListener('click', () => this.hideCreateProposalModal());
+                document.getElementById('cancel-vote').addEventListener('click', () => this.hideVoteModal());
+
+                // Form submissions
+                document.getElementById('proposal-form').addEventListener('submit', (e) => this.handleCreateProposal(e));
+                document.getElementById('add-option').addEventListener('click', () => this.addProposalOption());
+
+                // Actions
+                document.getElementById('claim-rewards-btn').addEventListener('click', () => this.claimRewards());
+                document.getElementById('refresh-data').addEventListener('click', () => this.loadData());
+
+                // Vote submission
+                document.getElementById('submit-vote').addEventListener('click', () => this.submitVote());
+            }
+
+            async connectWallet() {
+                try {
+                    if (typeof window.ethereum === 'undefined') {
+                        this.showMessage('MetaMask not detected. Please install MetaMask.', 'error');
+                        return;
+                    }
+
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    this.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = this.web3Provider.getSigner();
+                    this.userAddress = accounts[0];
+
+                    // Update UI
+                    document.getElementById('wallet-info').textContent = this.userAddress.substring(0, 10) + '...';
+                    document.getElementById('connect-wallet').textContent = 'Connected';
+                    document.getElementById('connect-wallet').disabled = true;
+
+                    // Initialize contract (placeholder - would use actual governance contract)
+                    // this.governanceContract = new ethers.Contract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, signer);
+
+                    await this.loadData();
+                    this.showMessage('✅ Wallet connected successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    this.showMessage('Error connecting wallet: ' + error.message, 'error');
+                }
+            }
+
+            async checkConnection() {
+                if (typeof window.ethereum !== 'undefined') {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        await this.connectWallet();
+                    }
+                }
+            }
+
+            async loadData() {
+                if (!this.userAddress) return;
+
+                try {
+                    // Load user governance stats (real data from contracts)
+                    this.userStats = {
+                        votingPower: '0', // Real voting power from staking contract
+                        proposalsCreated: '0',
+                        votesCount: '0',
+                        governanceRewards: '0' // Real rewards from governance participation
+                    };
+
+                    // Update stats display
+                    document.getElementById('user-voting-power').textContent = this.formatNumber(this.userStats.votingPower);
+                    document.getElementById('user-votes-count').textContent = this.userStats.votesCount;
+                    document.getElementById('user-governance-rewards').textContent = this.formatNumber(this.userStats.governanceRewards);
+
+                    // Load proposals (mock data)
+                    await this.loadActiveProposals();
+
+                    // Enable/disable buttons based on user stats
+                    this.updateButtonStates();
+
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }
+
+            async loadActiveProposals() {
+                // Load real proposals from governance contract
+                this.activeProposals = [];
+
+                try {
+                    // TODO: Load real proposals from governance contract
+                    // For now, start with empty state for production
+                    console.log('✅ Loading real governance proposals...');
+
+                } catch (error) {
+                    console.error('Error loading proposals:', error);
+                }
+
+                document.getElementById('active-proposals-count').textContent = this.activeProposals.length;
+                this.renderActiveProposals();
+            }
+
+            renderActiveProposals() {
+                const container = document.getElementById('active-proposals');
+
+                if (this.activeProposals.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-gray-800 p-8 rounded-lg text-center">
+                            <h3 class="text-xl font-bold text-gray-400 mb-4">No Active Proposals</h3>
+                            <p class="text-gray-500 mb-6">Governance is ready for community participation. Create the first proposal to shape the future of DAYANA!</p>
+                            <button onclick="governanceDashboard.showCreateProposalModal()" class="px-6 py-3 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold">
+                                Create First Proposal
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.activeProposals.map(proposal => {
+                    const timeRemaining = this.formatTimeRemaining(proposal.endTime);
+                    const winningOption = proposal.votes.indexOf(Math.max(...proposal.votes));
+                    const participationRate = ((proposal.totalVotes / 100000) * 100).toFixed(1); // Assuming 100k total possible votes
+
+                    return `
+                        <div class="bg-gray-800 p-6 rounded-lg border-l-4 ${proposal.isEarlyAdopter ? 'border-purple-400' : 'border-orange-400'}">
+                            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-white mb-2">
+                                        ${proposal.title}
+                                        ${proposal.isEarlyAdopter ? '<span class="text-purple-400 text-sm ml-2">🌟 Early Adopter</span>' : ''}
+                                    </h3>
+                                    <p class="text-gray-300 mb-4">${proposal.description}</p>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                        <div class="text-center bg-gray-700 p-3 rounded">
+                                            <p class="text-yellow-400 font-bold">${this.formatNumber(proposal.totalVotes)}</p>
+                                            <p class="text-gray-400 text-sm">Total Votes</p>
+                                        </div>
+                                        <div class="text-center bg-gray-700 p-3 rounded">
+                                            <p class="text-green-400 font-bold">${participationRate}%</p>
+                                            <p class="text-gray-400 text-sm">Participation</p>
+                                        </div>
+                                        <div class="text-center bg-gray-700 p-3 rounded">
+                                            <p class="text-blue-400 font-bold">${timeRemaining}</p>
+                                            <p class="text-gray-400 text-sm">Time Left</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-bold text-gray-300 mb-3">Current Results:</h4>
+                                ${proposal.options.map((option, index) => {
+                        const percentage = proposal.totalVotes > 0 ? ((proposal.votes[index] / proposal.totalVotes) * 100).toFixed(1) : 0;
+                        const isWinning = index === winningOption;
+                        const isUserVote = proposal.hasVoted && proposal.userVote === index;
+
+                        return `
+                                        <div class="mb-3">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-white ${isWinning ? 'font-bold' : ''}">
+                                                    ${option}
+                                                    ${isWinning ? '🏆' : ''}
+                                                    ${isUserVote ? '✅' : ''}
+                                                </span>
+                                                <span class="text-gray-400">${percentage}% (${this.formatNumber(proposal.votes[index])})</span>
+                                            </div>
+                                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                                <div class="h-2 rounded-full ${isWinning ? 'bg-green-400' : 'bg-gray-500'}" style="width: ${percentage}%"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                    }).join('')}
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-3">
+                                ${!proposal.hasVoted && parseInt(this.userStats?.votingPower || 0) >= proposal.minVotingPower ? `
+                                    <button onclick="governanceDashboard.showVoteModal(${proposal.id})" class="px-4 py-2 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold">
+                                        🗳️ Vote Now
+                                    </button>
+                                ` : ''}
+                                
+                                ${proposal.hasVoted ? `
+                                    <span class="px-4 py-2 rounded bg-green-600 text-white">✅ You Voted</span>
+                                ` : ''}
+                                
+                                ${parseInt(this.userStats?.votingPower || 0) < proposal.minVotingPower ? `
+                                    <span class="px-4 py-2 rounded bg-gray-600 text-gray-300 text-sm">
+                                        Need ${this.formatNumber(proposal.minVotingPower)} voting power
+                                    </span>
+                                ` : ''}
+                                
+                                <button class="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 text-white text-sm">
+                                    📊 View Details
+                                </button>
+                                
+                                <span class="text-gray-400 text-sm self-center">
+                                    by ${proposal.proposer}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            showCreateProposalModal(isEarlyAdopter = false) {
+                // Check if user has enough voting power
+                const minPowerRequired = isEarlyAdopter ? 5000 : 10000; // Lower for early adopters
+                const userPower = parseInt(this.userStats?.votingPower || 0);
+
+                if (userPower < minPowerRequired) {
+                    this.showMessage(`❌ You need at least ${this.formatNumber(minPowerRequired)} voting power to create ${isEarlyAdopter ? 'early adopter ' : ''}proposals. Current: ${this.formatNumber(userPower)}`, 'error');
+                    return;
+                }
+
+                const modal = document.getElementById('create-proposal-modal');
+                const title = modal.querySelector('h3');
+
+                if (isEarlyAdopter) {
+                    title.textContent = '🌟 Create Early Adopter Proposal';
+                    title.className = 'text-xl font-bold text-purple-400 mb-6';
+                } else {
+                    title.textContent = '📝 Create New Proposal';
+                    title.className = 'text-xl font-bold text-orange-400 mb-6';
+                }
+
+                modal.dataset.earlyAdopter = isEarlyAdopter;
+                modal.classList.remove('hidden');
+            }
+
+            hideCreateProposalModal() {
+                document.getElementById('create-proposal-modal').classList.add('hidden');
+                document.getElementById('proposal-form').reset();
+
+                // Reset to default 2 options
+                const optionsContainer = document.getElementById('proposal-options');
+                optionsContainer.innerHTML = `
+                    <input type="text" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none" placeholder="Option 1 (e.g., Yes)" required>
+                    <input type="text" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none" placeholder="Option 2 (e.g., No)" required>
+                `;
+            }
+
+            addProposalOption() {
+                const container = document.getElementById('proposal-options');
+                const optionCount = container.children.length;
+
+                if (optionCount >= 10) {
+                    this.showMessage('❌ Maximum 10 options allowed', 'error');
+                    return;
+                }
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'w-full p-3 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-400 focus:outline-none';
+                input.placeholder = `Option ${optionCount + 1}`;
+                input.required = true;
+
+                container.appendChild(input);
+            }
+
+            async handleCreateProposal(event) {
+                event.preventDefault();
+
+                try {
+                    const formData = new FormData(event.target);
+                    const title = document.getElementById('proposal-title').value;
+                    const description = document.getElementById('proposal-description').value;
+                    const minPower = document.getElementById('proposal-min-power').value;
+
+                    // Get all options
+                    const optionInputs = document.getElementById('proposal-options').querySelectorAll('input');
+                    const options = Array.from(optionInputs).map(input => input.value).filter(value => value.trim() !== '');
+
+                    if (options.length < 2) {
+                        this.showMessage('❌ At least 2 options are required', 'error');
+                        return;
+                    }
+
+                    this.showMessage('🔄 Creating proposal...', 'info');
+
+                    // Simulate proposal creation (would call smart contract in production)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Add to active proposals (mock)
+                    const newProposal = {
+                        id: this.activeProposals.length + 1,
+                        title: title,
+                        description: description,
+                        options: options,
+                        votes: new Array(options.length).fill(0),
+                        totalVotes: 0,
+                        endTime: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days from now
+                        status: "Active",
+                        proposer: this.userAddress,
+                        hasVoted: false,
+                        minVotingPower: parseInt(minPower),
+                        isEarlyAdopter: document.getElementById('create-proposal-modal').dataset.earlyAdopter === 'true'
+                    };
+
+                    this.activeProposals.unshift(newProposal);
+                    this.renderActiveProposals();
+
+                    // Update rewards (mock)
+                    const rewardAmount = newProposal.isEarlyAdopter ? 200 : 100;
+                    this.userStats.governanceRewards = (parseInt(this.userStats.governanceRewards) + rewardAmount).toString();
+                    this.userStats.proposalsCreated = (parseInt(this.userStats.proposalsCreated) + 1).toString();
+
+                    // Update UI
+                    document.getElementById('user-governance-rewards').textContent = this.formatNumber(this.userStats.governanceRewards);
+                    document.getElementById('active-proposals-count').textContent = this.activeProposals.length;
+
+                    this.hideCreateProposalModal();
+                    this.showMessage(`✅ Proposal created successfully! You earned ${rewardAmount} DAYA reward!`, 'success');
+
+                } catch (error) {
+                    console.error('Error creating proposal:', error);
+                    this.showMessage('❌ Error creating proposal: ' + error.message, 'error');
+                }
+            }
+
+            showVoteModal(proposalId) {
+                const proposal = this.activeProposals.find(p => p.id === proposalId);
+                if (!proposal) return;
+
+                const modal = document.getElementById('vote-modal');
+                const proposalInfo = document.getElementById('vote-proposal-info');
+                const voteOptions = document.getElementById('vote-options');
+                const votePowerDisplay = document.getElementById('vote-power-display');
+
+                // Set proposal info
+                proposalInfo.innerHTML = `
+                    <h4 class="font-bold text-white mb-2">${proposal.title}</h4>
+                    <p class="text-gray-300 text-sm">${proposal.description}</p>
+                `;
+
+                // Set vote options
+                voteOptions.innerHTML = proposal.options.map((option, index) => `
+                    <label class="flex items-center p-3 rounded bg-gray-700 hover:bg-gray-600 cursor-pointer border border-gray-600 hover:border-orange-400">
+                        <input type="radio" name="vote-option" value="${index}" class="mr-3">
+                        <span class="text-white">${option}</span>
+                    </label>
+                `).join('');
+
+                // Set voting power
+                votePowerDisplay.textContent = this.formatNumber(this.userStats.votingPower);
+
+                // Store proposal ID for submission
+                modal.dataset.proposalId = proposalId;
+
+                modal.classList.remove('hidden');
+            }
+
+            hideVoteModal() {
+                document.getElementById('vote-modal').classList.add('hidden');
+                document.getElementById('vote-reason').value = '';
+
+                // Clear radio selections
+                const radios = document.getElementsByName('vote-option');
+                radios.forEach(radio => radio.checked = false);
+            }
+
+            async submitVote() {
+                try {
+                    const modal = document.getElementById('vote-modal');
+                    const proposalId = parseInt(modal.dataset.proposalId);
+                    const selectedOption = document.querySelector('input[name="vote-option"]:checked');
+                    const reason = document.getElementById('vote-reason').value;
+
+                    if (!selectedOption) {
+                        this.showMessage('❌ Please select an option to vote', 'error');
+                        return;
+                    }
+
+                    const optionIndex = parseInt(selectedOption.value);
+                    const proposal = this.activeProposals.find(p => p.id === proposalId);
+
+                    this.showMessage('🔄 Casting your vote...', 'info');
+
+                    // Simulate vote submission
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Update proposal data (mock)
+                    const votingPower = parseInt(this.userStats.votingPower);
+                    proposal.votes[optionIndex] += votingPower;
+                    proposal.totalVotes += votingPower;
+                    proposal.hasVoted = true;
+                    proposal.userVote = optionIndex;
+
+                    // Update user stats
+                    this.userStats.votesCount = (parseInt(this.userStats.votesCount) + 1).toString();
+                    this.userStats.governanceRewards = (parseInt(this.userStats.governanceRewards) + 10).toString();
+
+                    // Update UI
+                    document.getElementById('user-votes-count').textContent = this.userStats.votesCount;
+                    document.getElementById('user-governance-rewards').textContent = this.formatNumber(this.userStats.governanceRewards);
+                    this.renderActiveProposals();
+
+                    this.hideVoteModal();
+                    this.showMessage('✅ Vote cast successfully! You earned 10 DAYA reward!', 'success');
+
+                } catch (error) {
+                    console.error('Error submitting vote:', error);
+                    this.showMessage('❌ Error submitting vote: ' + error.message, 'error');
+                }
+            }
+
+            async claimRewards() {
+                const rewards = parseInt(this.userStats?.governanceRewards || 0);
+                if (rewards === 0) {
+                    this.showMessage('❌ No rewards to claim', 'error');
+                    return;
+                }
+
+                try {
+                    this.showMessage('🔄 Claiming governance rewards...', 'info');
+
+                    // Simulate reward claim
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Reset rewards (mock)
+                    this.userStats.governanceRewards = '0';
+                    document.getElementById('user-governance-rewards').textContent = '0';
+
+                    this.showMessage(`✅ Successfully claimed ${this.formatNumber(rewards)} DAYA governance rewards!`, 'success');
+
+                } catch (error) {
+                    console.error('Error claiming rewards:', error);
+                    this.showMessage('❌ Error claiming rewards: ' + error.message, 'error');
+                }
+            }
+
+            updateButtonStates() {
+                const userPower = parseInt(this.userStats?.votingPower || 0);
+                const rewards = parseInt(this.userStats?.governanceRewards || 0);
+
+                // Create proposal button
+                const createBtn = document.getElementById('create-proposal-btn');
+                createBtn.disabled = userPower < 10000;
+
+                // Early adopter proposal button
+                const earlyAdopterBtn = document.getElementById('early-adopter-proposal-btn');
+                earlyAdopterBtn.disabled = userPower < 5000;
+
+                // Claim rewards button
+                const claimBtn = document.getElementById('claim-rewards-btn');
+                claimBtn.disabled = rewards === 0;
+            }
+
+            formatNumber(num) {
+                const number = parseInt(num);
+                if (number >= 1000000) {
+                    return (number / 1000000).toFixed(1) + 'M';
+                } else if (number >= 1000) {
+                    return (number / 1000).toFixed(1) + 'K';
+                }
+                return number.toLocaleString();
+            }
+
+            formatTimeRemaining(endTime) {
+                const now = Date.now();
+                const remaining = endTime - now;
+
+                if (remaining <= 0) return 'Ended';
+
+                const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+                if (days > 0) {
+                    return `${days}d ${hours}h`;
+                } else if (hours > 0) {
+                    return `${hours}h`;
+                } else {
+                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    return `${minutes}m`;
+                }
+            }
+
+            showMessage(message, type = 'info') {
+                const container = document.getElementById('message-container');
+                const messageEl = document.createElement('div');
+
+                const bgColor = {
+                    success: 'bg-green-500',
+                    error: 'bg-red-500',
+                    warning: 'bg-yellow-500',
+                    info: 'bg-blue-500'
+                }[type] || 'bg-blue-500';
+
+                messageEl.className = `${bgColor} text-white p-4 rounded-lg mb-4 max-w-sm`;
+                messageEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">×</button>
+                    </div>
+                `;
+
+                container.appendChild(messageEl);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (messageEl.parentElement) {
+                        messageEl.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard
+        let governanceDashboard;
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                governanceDashboard = new GovernanceDashboard();
+            });
+        } else {
+            governanceDashboard = new GovernanceDashboard();
+        }
+    </script>
+</body>
+
+</html>

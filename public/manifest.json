@@ -1,0 +1,66 @@
+{
+  "name": "BASED DAYANA",
+  "short_name": "$DAYA",
+  "description": "BASED DAYANA ($DAYA) - Revolutionary DeFi ecosystem for staking, governance, and exclusive rewards",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#F97316",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/daya_logo_32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/daya_logo_64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/daya_logo_128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/daya_logo_256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Buy $DAYA",
+      "short_name": "Buy",
+      "description": "Buy DAYA tokens on Uniswap",
+      "url": "/#buy",
+      "icons": [
+        {
+          "src": "/daya_logo_128x128.png",
+          "sizes": "128x128"
+        }
+      ]
+    },
+    {
+      "name": "Airdrop",
+      "short_name": "Claim",
+      "description": "Claim your airdrop",
+      "url": "/#airdrop",
+      "icons": [
+        {
+          "src": "/daya_logo_128x128.png",
+          "sizes": "128x128"
+        }
+      ]
+    }
+  ]
+}

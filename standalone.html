@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BASED DAYANA ($DAYA) | The Future of Decentralized Ecosystems</title>
+    <meta name="description" content="BASED DAYANA ($DAYA) is a revolutionary DeFi project building a comprehensive ecosystem for staking, governance, and exclusive rewards.">
+    
+    <!-- Tailwind CSS Production Build -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'orange-custom': '#F97316',
+                        'yellow-custom': '#FBBF24'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom styles for production */
+        .text-gradient {
+            background-image: linear-gradient(to right, #F97316, #FBBF24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.7), 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+        
+        .floating-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .orange-glow {
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.6),
+                        0 0 40px rgba(249, 115, 22, 0.4),
+                        0 0 60px rgba(249, 115, 22, 0.2);
+            filter: drop-shadow(0 0 15px rgba(249, 115, 22, 0.5));
+        }
+        
+        .error-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            z-index: 9999;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .error-banner.show {
+            transform: translateY(0);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1f2937, #111827);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            color: white;
+            border: 1px solid #374151;
+        }
+        
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .wallet-option:hover {
+            background: rgba(249, 115, 22, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .loading {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #F97316;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-200">
+    <!-- Error Banner -->
+    <div id="errorBanner" class="error-banner">
+        <span id="errorMessage">Network Error: Unable to load Web3 dependencies.</span>
+        <button onclick="retryConnection()" class="ml-4 px-4 py-1 bg-white text-red-500 rounded">
+            Retry
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-black/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                    <span class="text-black font-bold">D</span>
+                </div>
+                <span class="text-lg font-bold text-gradient">BASED DAYANA</span>
+            </a>
+            
+            <button id="connect-wallet-btn" class="bg-orange-500 text-black font-bold px-6 py-3 rounded-full hover:bg-orange-400 transition-transform hover:scale-105">
+                CONNECT WALLET
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="container mx-auto px-6 py-16 md:py-24">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl md:text-6xl font-black leading-tight">
+                        Beyond a Token: <br>
+                        <span class="text-gradient glow-text">An Ecosystem for the Future</span>
+                    </h1>
+                    <p class="mt-4 text-lg text-gray-400">
+                        BASED DAYANA ($DAYA) is a revolutionary DeFi project pioneering a community-owned 
+                        ecosystem for staking, governance, and exclusive rewards. This is your opportunity 
+                        to be part of the next evolution in decentralized finance.
+                    </p>
+                    
+                    <div class="mt-8 flex flex-col items-center lg:items-start">
+                        <div class="w-full max-w-sm space-y-4 text-center lg:text-left">
+                            <a href="https://app.uniswap.org/explore/tokens/base/0xb6FA6E89479C2A312B6BbebD3db06f4832CcE04A"
+                               target="_blank"
+                               class="w-full inline-block text-center bg-orange-500 text-black font-bold px-6 md:px-10 py-3 rounded-full hover:bg-orange-400 transition-transform hover:scale-105">
+                                BECOME AN EARLY INVESTOR
+                            </a>
+                            
+                            <div class="w-full">
+                                <label class="text-sm text-gray-500">Contract Address (CA):</label>
+                                <div class="flex items-center mt-1 w-full">
+                                    <input id="contract-address" type="text"
+                                           class="flex-1 bg-gray-900 border border-gray-700 rounded-l-lg p-3 text-sm truncate min-w-0"
+                                           value="0xb6FA6E89479C2A312B6BbebD3db06f4832CcE04A" readonly>
+                                    <button onclick="copyAddress()"
+                                            class="bg-gray-700 text-white p-3 rounded-r-lg hover:bg-orange-600 flex-shrink-0">
+                                        📋
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex justify-center">
+                    <div class="w-64 h-64 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center floating-animation orange-glow">
+                        <span class="text-6xl">👑</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Airdrop Section -->
+        <section id="airdrop" class="py-20 bg-gradient-to-b from-gray-900/50 to-black">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        🪂 <span class="text-gradient">DAYA Airdrop</span> Status
+                    </h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">
+                        Participate in our exclusive airdrops using Merkle tree technology for fair and gas-efficient distribution.
+                    </p>
+                </div>
+
+                <!-- Airdrop Status Cards -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div class="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Airdrop Status</h3>
+                            <div id="airdrop-status-indicator" class="w-3 h-3 rounded-full bg-gray-500"></div>
+                        </div>
+                        <div id="airdrop-status-text" class="text-2xl font-bold text-orange-400 mb-2">Loading...</div>
+                        <p class="text-sm text-gray-400">Current airdrop campaign status</p>
+                    </div>
+
+                    <div class="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Your Eligibility</h3>
+                            <i id="eligibility-icon" class="fa-solid fa-question-circle text-gray-500"></i>
+                        </div>
+                        <div id="claimable-amount" class="text-2xl font-bold text-orange-400 mb-2">Connect Wallet</div>
+                        <p class="text-sm text-gray-400">Tokens available to claim</p>
+                    </div>
+
+                    <div class="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Claim Deadline</h3>
+                            <i class="fa-solid fa-clock text-orange-400"></i>
+                        </div>
+                        <div id="claim-deadline" class="text-2xl font-bold text-orange-400 mb-2">--</div>
+                        <p class="text-sm text-gray-400">Time remaining to claim</p>
+                    </div>
+                </div>
+
+                <!-- Airdrop Actions Panel -->
+                <div class="bg-gray-800/30 rounded-2xl p-8 border border-gray-700">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold mb-6 text-white">Claim Your Airdrop</h3>
+                            
+                            <div id="airdrop-connect-required" class="text-center py-8">
+                                <div class="text-4xl mb-4">👛</div>
+                                <p class="text-gray-400 mb-4">Connect your wallet to check airdrop eligibility</p>
+                                <button id="airdrop-connect-btn"
+                                        class="bg-orange-500 text-black font-bold px-6 py-3 rounded-full hover:bg-orange-400 transition-transform hover:scale-105">
+                                    Connect Wallet
+                                </button>
+                            </div>
+
+                            <div id="airdrop-claim-interface" class="hidden">
+                                <div class="bg-gray-900/50 rounded-xl p-6 mb-6">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-gray-400">Claimable Amount:</span>
+                                        <span id="claim-amount-display" class="text-white font-bold">0 DAYA</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-gray-400">Your Address:</span>
+                                        <span id="user-address-display" class="text-white font-mono text-sm">--</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">Claim Status:</span>
+                                        <span id="claim-status-display" class="text-orange-400 font-bold">Checking...</span>
+                                    </div>
+                                </div>
+
+                                <button id="claim-airdrop-btn" onclick="claimAirdrop()" disabled
+                                        class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-bold py-4 px-6 rounded-xl hover:from-orange-400 hover:to-yellow-400 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                                    🪂 Claim Airdrop
+                                </button>
+
+                                <div id="already-claimed" class="hidden text-center py-4">
+                                    <div class="text-green-400 text-2xl mb-2">✅</div>
+                                    <p class="text-green-400 font-bold">Airdrop Already Claimed!</p>
+                                    <p class="text-gray-400 text-sm">Thank you for participating</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-6 text-white">Airdrop Information</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-gray-900/50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-orange-400 mb-2">How It Works</h4>
+                                    <ul class="text-sm text-gray-400 space-y-1">
+                                        <li>• Merkle tree technology ensures fair distribution</li>
+                                        <li>• Gas-efficient claiming process</li>
+                                        <li>• Automated eligibility verification</li>
+                                        <li>• Secure and transparent allocation</li>
+                                    </ul>
+                                </div>
+
+                                <div class="bg-gray-900/50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-orange-400 mb-2">Eligibility Criteria</h4>
+                                    <ul class="text-sm text-gray-400 space-y-1">
+                                        <li>• Early community members</li>
+                                        <li>• Active social media participants</li>
+                                        <li>• Token holders (snapshot-based)</li>
+                                        <li>• Whitelist participants</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Wallet Modal -->
+    <div id="wallet-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Connect Wallet</h3>
+                <button onclick="closeWalletModal()" class="text-gray-400 hover:text-white text-2xl">
+                    ×
+                </button>
+            </div>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-white text-2xl">👛</span>
+                </div>
+                <h4 class="text-lg font-semibold text-white mb-2">Connect Your Wallet</h4>
+                <p class="text-gray-400 text-sm">Choose your preferred wallet to connect to BASED DAYANA</p>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="connectWallet('metamask')" class="w-full flex items-center justify-center p-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-400 hover:to-yellow-400 rounded-xl text-black font-bold transition-all transform hover:scale-105">
+                    🦊 MetaMask
+                </button>
+                
+                <button onclick="connectWallet('coinbase')" class="w-full flex items-center justify-center p-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 rounded-xl text-white font-bold transition-all transform hover:scale-105">
+                    💙 Coinbase Wallet
+                </button>
+                
+                <button onclick="connectWallet('trust')" class="w-full flex items-center justify-center p-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 rounded-xl text-white font-bold transition-all transform hover:scale-105">
+                    🛡️ Trust Wallet
+                </button>
+                
+                <button onclick="connectWallet('rainbow')" class="w-full flex items-center justify-center p-4 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 rounded-xl text-white font-bold transition-all transform hover:scale-105">
+                    🌈 Rainbow
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-400">
+                    By connecting, you agree to our
+                    <a href="#" class="text-orange-400 underline">Terms of Service</a>
+                    and
+                    <a href="#" class="text-orange-400 underline">Privacy Policy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // BASED DAYANA - Standalone Web3 Implementation
+        // ============================================
+        
+        class BasedDayanaApp {
+            constructor() {
+                this.provider = null;
+                this.signer = null;
+                this.address = null;
+                this.connected = false;
+                this.ethers = null;
+                this.airdropData = null;
+                this.initialized = false;
+            }
+
+            async init() {
+                console.log('🚀 Initializing BASED DAYANA dApp...');
+                
+                try {
+                    // Load ethers.js with fallbacks
+                    await this.loadEthers();
+                    
+                    // Setup global functions
+                    this.setupGlobalFunctions();
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    // Check for existing connection
+                    await this.checkExistingConnection();
+                    
+                    // Initialize airdrop system
+                    await this.initializeAirdrop();
+                    
+                    this.initialized = true;
+                    console.log('✅ BASED DAYANA dApp initialized successfully');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize dApp:', error);
+                    this.showError('Failed to initialize dApp. Please refresh the page.');
+                }
+            }
+
+            async loadEthers() {
+                const ethersUrls = [
+                    'https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js',
+                    'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
+                    'https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js'
+                ];
+
+                for (const url of ethersUrls) {
+                    try {
+                        await this.loadScript(url);
+                        if (window.ethers) {
+                            this.ethers = window.ethers;
+                            console.log('✅ Ethers.js loaded successfully');
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn(`Failed to load ethers from ${url}`, error);
+                    }
+                }
+
+                // Fallback: Create basic ethers-like interface
+                this.createEthersFallback();
+            }
+
+            createEthersFallback() {
+                console.log('⚠️ Using ethers fallback implementation');
+                
+                // Basic ethers-like interface for essential functions
+                this.ethers = {
+                    providers: {
+                        Web3Provider: function(provider) {
+                            return {
+                                getSigner: () => ({
+                                    getAddress: async () => {
+                                        const accounts = await provider.request({ method: 'eth_accounts' });
+                                        return accounts[0];
+                                    }
+                                }),
+                                getNetwork: async () => ({
+                                    chainId: 8453 // Base Mainnet
+                                })
+                            };
+                        }
+                    },
+                    utils: {
+                        formatUnits: (amount, decimals = 18) => {
+                            const divisor = Math.pow(10, decimals);
+                            return (parseFloat(amount) / divisor).toFixed(4);
+                        },
+                        parseUnits: (amount, decimals = 18) => {
+                            const multiplier = Math.pow(10, decimals);
+                            return (parseFloat(amount) * multiplier).toString();
+                        }
+                    }
+                };
+            }
+
+            loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+
+            setupGlobalFunctions() {
+                // Critical function: formatTokenAmount
+                window.formatTokenAmount = (amount, decimals = 18) => {
+                    try {
+                        if (!amount || amount === '0') return '0';
+                        
+                        if (this.ethers && this.ethers.utils) {
+                            return this.ethers.utils.formatUnits(amount, decimals);
+                        }
+                        
+                        // Fallback manual calculation
+                        const divisor = Math.pow(10, decimals);
+                        const result = parseFloat(amount) / divisor;
+                        return result.toFixed(4);
+                    } catch (error) {
+                        console.error('Error formatting token amount:', error);
+                        return '0';
+                    }
+                };
+
+                // Parse token amount function
+                window.parseTokenAmount = (amount, decimals = 18) => {
+                    try {
+                        if (!amount) return '0';
+                        
+                        if (this.ethers && this.ethers.utils) {
+                            return this.ethers.utils.parseUnits(amount.toString(), decimals);
+                        }
+                        
+                        const multiplier = Math.pow(10, decimals);
+                        return (parseFloat(amount) * multiplier).toString();
+                    } catch (error) {
+                        console.error('Error parsing token amount:', error);
+                        return '0';
+                    }
+                };
+
+                // Make app globally accessible
+                window.basedDayanaApp = this;
+            }
+
+            setupEventListeners() {
+                // Connect wallet buttons
+                const connectBtn = document.getElementById('connect-wallet-btn');
+                const airdropConnectBtn = document.getElementById('airdrop-connect-btn');
+                
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', () => this.showWalletModal());
+                }
+                
+                if (airdropConnectBtn) {
+                    airdropConnectBtn.addEventListener('click', () => this.showWalletModal());
+                }
+
+                // Claim airdrop button
+                const claimBtn = document.getElementById('claim-airdrop-btn');
+                if (claimBtn) {
+                    claimBtn.addEventListener('click', () => this.claimAirdrop());
+                }
+            }
+
+            showWalletModal() {
+                const modal = document.getElementById('wallet-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            closeWalletModal() {
+                const modal = document.getElementById('wallet-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            }
+
+            async connectWallet(walletType) {
+                try {
+                    console.log(`🔄 Connecting to ${walletType}...`);
+                    
+                    if (!window.ethereum) {
+                        throw new Error('No Web3 wallet detected. Please install MetaMask or another Web3 wallet.');
+                    }
+
+                    // Request account access
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+
+                    if (accounts.length === 0) {
+                        throw new Error('No accounts found. Please unlock your wallet.');
+                    }
+
+                    // Setup provider and signer
+                    this.provider = new this.ethers.providers.Web3Provider(window.ethereum);
+                    this.signer = this.provider.getSigner();
+                    this.address = accounts[0];
+                    this.connected = true;
+
+                    // Check network
+                    const network = await this.signer.provider.getNetwork();
+                    if (Number(network.chainId) !== 8453) {
+                        await this.switchToBaseNetwork();
+                    }
+
+                    // Update UI
+                    this.updateUI();
+                    this.closeWalletModal();
+                    
+                    // Initialize airdrop for connected user
+                    await this.initializeAirdrop();
+                    
+                    console.log('✅ Wallet connected:', this.address);
+                    
+                    // Setup wallet event listeners
+                    this.setupWalletListeners();
+                    
+                } catch (error) {
+                    console.error('❌ Failed to connect wallet:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            async switchToBaseNetwork() {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x2105' }] // Base Mainnet
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        // Add Base network
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x2105',
+                                chainName: 'Base Mainnet',
+                                nativeCurrency: {
+                                    name: 'Ethereum',
+                                    symbol: 'ETH',
+                                    decimals: 18
+                                },
+                                rpcUrls: ['https://mainnet.base.org'],
+                                blockExplorerUrls: ['https://basescan.org']
+                            }]
+                        });
+                    }
+                }
+            }
+
+            setupWalletListeners() {
+                if (window.ethereum) {
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        if (accounts.length === 0) {
+                            this.disconnect();
+                        } else {
+                            this.address = accounts[0];
+                            this.updateUI();
+                        }
+                    });
+
+                    window.ethereum.on('chainChanged', (chainId) => {
+                        console.log('Chain changed:', chainId);
+                        if (Number(chainId) !== 8453) {
+                            this.showError('Please switch to Base Mainnet');
+                        }
+                    });
+                }
+            }
+
+            async checkExistingConnection() {
+                if (window.ethereum) {
+                    try {
+                        const accounts = await window.ethereum.request({ 
+                            method: 'eth_accounts' 
+                        });
+                        
+                        if (accounts.length > 0) {
+                            this.provider = new this.ethers.providers.Web3Provider(window.ethereum);
+                            this.signer = this.provider.getSigner();
+                            this.address = accounts[0];
+                            this.connected = true;
+                            this.updateUI();
+                            await this.initializeAirdrop();
+                        }
+                    } catch (error) {
+                        console.error('Failed to check existing connection:', error);
+                    }
+                }
+            }
+
+            async initializeAirdrop() {
+                if (!this.connected) {
+                    console.log('Wallet not connected, skipping airdrop initialization');
+                    return;
+                }
+
+                try {
+                    // Simulate airdrop data (in production, this would come from smart contracts)
+                    this.airdropData = {
+                        totalAirdrop: '1000000000000000000000', // 1000 tokens
+                        userAllocation: '100000000000000000000', // 100 tokens
+                        claimed: false,
+                        deadline: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+                    };
+
+                    this.updateAirdropUI();
+                    console.log('✅ Airdrop system initialized');
+                    
+                } catch (error) {
+                    console.error('Failed to initialize airdrop:', error);
+                }
+            }
+
+            updateUI() {
+                const connectBtn = document.getElementById('connect-wallet-btn');
+                const airdropConnectRequired = document.getElementById('airdrop-connect-required');
+                const airdropClaimInterface = document.getElementById('airdrop-claim-interface');
+                
+                if (this.connected && this.address) {
+                    // Update connect button
+                    connectBtn.textContent = `${this.address.slice(0, 6)}...${this.address.slice(-4)}`;
+                    connectBtn.classList.add('bg-green-600', 'hover:bg-green-500');
+                    connectBtn.classList.remove('bg-orange-500', 'hover:bg-orange-400');
+                    
+                    // Show airdrop interface
+                    if (airdropConnectRequired) airdropConnectRequired.classList.add('hidden');
+                    if (airdropClaimInterface) airdropClaimInterface.classList.remove('hidden');
+                    
+                    // Update airdrop displays
+                    this.updateAirdropUI();
+                } else {
+                    // Reset connect button
+                    connectBtn.textContent = 'CONNECT WALLET';
+                    connectBtn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                    connectBtn.classList.add('bg-orange-500', 'hover:bg-orange-400');
+                    
+                    // Hide airdrop interface
+                    if (airdropConnectRequired) airdropConnectRequired.classList.remove('hidden');
+                    if (airdropClaimInterface) airdropClaimInterface.classList.add('hidden');
+                }
+            }
+
+            updateAirdropUI() {
+                if (!this.airdropData) return;
+
+                // Update status indicators
+                const statusIndicator = document.getElementById('airdrop-status-indicator');
+                const statusText = document.getElementById('airdrop-status-text');
+                const claimableAmount = document.getElementById('claimable-amount');
+                const eligibilityIcon = document.getElementById('eligibility-icon');
+                
+                if (statusIndicator && statusText) {
+                    statusIndicator.className = 'w-3 h-3 rounded-full bg-green-400';
+                    statusText.textContent = 'Active';
+                }
+                
+                if (claimableAmount && eligibilityIcon) {
+                    const formattedAmount = window.formatTokenAmount(this.airdropData.userAllocation);
+                    claimableAmount.textContent = `${formattedAmount} DAYA`;
+                    eligibilityIcon.className = 'fa-solid fa-gift text-orange-400';
+                }
+
+                // Update claim interface
+                const claimAmountDisplay = document.getElementById('claim-amount-display');
+                const userAddressDisplay = document.getElementById('user-address-display');
+                const claimStatusDisplay = document.getElementById('claim-status-display');
+                const claimBtn = document.getElementById('claim-airdrop-btn');
+                
+                if (claimAmountDisplay) {
+                    claimAmountDisplay.textContent = `${window.formatTokenAmount(this.airdropData.userAllocation)} DAYA`;
+                }
+                
+                if (userAddressDisplay && this.address) {
+                    userAddressDisplay.textContent = `${this.address.slice(0, 6)}...${this.address.slice(-4)}`;
+                }
+                
+                if (claimStatusDisplay) {
+                    claimStatusDisplay.textContent = this.airdropData.claimed ? 'Already Claimed' : 'Ready to Claim';
+                }
+                
+                if (claimBtn) {
+                    claimBtn.disabled = this.airdropData.claimed;
+                }
+            }
+
+            async claimAirdrop() {
+                try {
+                    if (!this.connected) {
+                        throw new Error('Wallet not connected');
+                    }
+                    
+                    if (this.airdropData.claimed) {
+                        throw new Error('Airdrop already claimed');
+                    }
+                    
+                    console.log('🪂 Claiming airdrop...');
+                    
+                    // Simulate claim process (in production, this would interact with smart contract)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    this.airdropData.claimed = true;
+                    this.updateAirdropUI();
+                    
+                    this.showSuccess('Airdrop claimed successfully!');
+                    
+                } catch (error) {
+                    console.error('Failed to claim airdrop:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            disconnect() {
+                this.provider = null;
+                this.signer = null;
+                this.address = null;
+                this.connected = false;
+                this.airdropData = null;
+                
+                this.updateUI();
+                console.log('🔌 Wallet disconnected');
+            }
+
+            showError(message) {
+                const banner = document.getElementById('errorBanner');
+                const errorMsg = document.getElementById('errorMessage');
+                
+                if (banner && errorMsg) {
+                    errorMsg.textContent = message;
+                    banner.classList.add('show');
+                    
+                    setTimeout(() => {
+                        banner.classList.remove('show');
+                    }, 5000);
+                }
+            }
+
+            showSuccess(message) {
+                // Create success notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // ============================================
+        // Global Functions
+        // ============================================
+        function connectWallet(type) {
+            if (window.basedDayanaApp) {
+                window.basedDayanaApp.connectWallet(type);
+            }
+        }
+
+        function closeWalletModal() {
+            if (window.basedDayanaApp) {
+                window.basedDayanaApp.closeWalletModal();
+            }
+        }
+
+        function claimAirdrop() {
+            if (window.basedDayanaApp) {
+                window.basedDayanaApp.claimAirdrop();
+            }
+        }
+
+        function copyAddress() {
+            const address = document.getElementById('contract-address').value;
+            navigator.clipboard.writeText(address).then(() => {
+                alert('Contract address copied to clipboard!');
+            });
+        }
+
+        function retryConnection() {
+            location.reload();
+        }
+
+        // ============================================
+        // Initialize App
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Starting BASED DAYANA dApp...');
+            
+            const app = new BasedDayanaApp();
+            await app.init();
+            
+            console.log('✅ BASED DAYANA dApp ready');
+        });
+    </script>
+</body>
+</html>
+
+
