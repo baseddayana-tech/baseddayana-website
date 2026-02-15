@@ -12,6 +12,18 @@ node_modules
 dist
 dist-ssr
 
+# Deployed files (auto-synced from dist/ by GitHub Actions)
+/assets/
+/CNAME
+/manifest.json
+/robots.txt
+/sitemap.xml
+/vite.svg
+/new_file.txt
+/logo.png
+/daya_logo_*.png
+/tsconfig.app.json
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
