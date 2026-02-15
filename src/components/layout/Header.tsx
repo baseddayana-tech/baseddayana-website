@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
 const navLinks = [
   { name: 'Why Invest', href: '#invest', icon: LayoutDashboard },
   { name: 'Utility', href: '#utility', icon: Settings },
-  { name: 'Strategies', href: '#strategies', icon: Coins },
+
   { name: 'Airdrop', href: '#airdrop', icon: Wind },
   { name: 'Security', href: '#security', icon: Shield },
   { name: 'Tokenomics', href: '#tokenomics', icon: Coins },

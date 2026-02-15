@@ -4,7 +4,7 @@ import { WhyInvest } from './components/WhyInvest'
 import { Tokenomics } from './components/Tokenomics'
 import { Security } from './components/Security'
 import { Airdrop } from './components/Airdrop'
-import { Staking } from './components/Staking'
+
 import { Partners } from './components/Partners'
 import { Footer } from './components/layout/Footer'
 
@@ -17,12 +17,12 @@ function App() {
         <WhyInvest />
         <Tokenomics />
         <Security />
-        <Staking />
+
         <Airdrop />
         <Partners />
       </main>
       <Footer />
-      
+
       {/* Scroll to top decorative element */}
       <div className="fixed bottom-8 right-8 z-40">
         <div className="h-12 w-12 bg-gray-900 border border-white/5 rounded-full flex items-center justify-center hover:bg-orange-500 hover:text-black transition-all cursor-pointer shadow-2xl">
