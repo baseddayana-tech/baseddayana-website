@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Coins, ChevronRight, Lock, Unlock, Zap, Info, Wallet } from 'lucide-react';
-import { useAccount, useConnect, useConnectors } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
 import { useStaking } from '../hooks/useStaking';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESSES, CONTRACT_ABIS, NETWORK_CONFIG } from '../config/constants';
@@ -26,8 +26,7 @@ function cn(...inputs: (string | boolean | undefined | null)[]) {
 
 export const Staking: React.FC = () => {
     const { isConnected } = useAccount();
-    const { connect } = useConnect();
-    const connectors = useConnectors();
+    const { connect, connectors } = useConnect();
     const { stakeInfo, isLoading, stake, unstake } = useStaking();
     const [amount, setAmount] = useState('');
     const [selectedTier, setSelectedTier] = useState(0);

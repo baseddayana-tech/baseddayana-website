@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Wallet, ShieldAlert, Check, Wind } from 'lucide-react';
-import { useAccount, useConnect, useConnectors } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
 import { useAirdrop } from '../hooks/useAirdrop';
 import { useAirdropStatus } from '../hooks/useAirdropStatus';
 import { clsx, type ClassValue } from 'clsx';
@@ -13,8 +13,7 @@ function cn(...inputs: ClassValue[]) {
 
 export const Airdrop: React.FC = () => {
     const { address, isConnected } = useAccount();
-    const { connect } = useConnect();
-    const connectors = useConnectors();
+    const { connect, connectors } = useConnect();
     const { isClaimed, isLoading, claim } = useAirdrop();
     const { status: airdropStatus } = useAirdropStatus();
 
