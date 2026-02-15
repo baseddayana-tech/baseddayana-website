@@ -13,6 +13,7 @@
 
 ### Social Media
 - **X (Twitter)**: [@BasedDayana](https://x.com/BasedDayana)
+- **Instagram**: [@basedayana](https://www.instagram.com/basedayana/)
 - **Telegram**: [Based Dayana Community](https://t.me/based_dayana)
 - **Email**: info@dayanacoin.xyz
 
@@ -77,5 +78,6 @@ This repository contains the official website for BasedDayana ($DAYA) token. Alw
 
 **🌐 Website**: https://www.baseddayana.xyz  
 **🐦 Twitter**: [@BasedDayana](https://x.com/BasedDayana)  
+**📸 Instagram**: [@basedayana](https://www.instagram.com/basedayana/)  
 **💬 Telegram**: [Join Community](https://t.me/based_dayana)  
 **💻 GitHub**: [Smart Contracts](https://github.com/baseddayana-tech/baseddayana-contracts)

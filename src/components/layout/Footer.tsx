@@ -1,5 +1,5 @@
 import React from 'react';
-import { Twitter, Send, Github, Mail } from 'lucide-react';
+import { Twitter, Send, Github, Mail, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -23,6 +23,7 @@ export const Footer: React.FC = () => {
               { icon: Send, href: 'https://t.me/based_dayana', label: 'Telegram' },
               { icon: Twitter, href: 'https://x.com/BasedDayana', label: 'Twitter' },
               { icon: Github, href: 'https://github.com/baseddayana-tech/baseddayana-contracts', label: 'GitHub' },
+              { icon: Instagram, href: 'https://www.instagram.com/basedayana/', label: 'Instagram' },
               { icon: Mail, href: 'mailto:info@dayanacoin.xyz', label: 'Email' },
             ].map((social) => (
               <a
