@@ -28,6 +28,11 @@ export const CONTRACT_ABIS = {
         "function unstake()",
         "function calculateRewards(address _staker) view returns (uint256)",
         "function getStakingTiers() view returns (tuple(uint256 period, uint256 apyBps)[])",
+        "function earlyUnstakePenaltyBps() view returns (uint256)",
+    ],
+    VESTING: [
+        "function vestingSchedules(address) view returns (tuple(uint256 totalAmount, uint256 start, uint256 cliff, uint256 duration, uint256 released, bool revocable, bool revoked))",
+        "function getReleasableAmount(address) view returns (uint256)",
     ],
     PRICE_ORACLE: [
         "function getDAYAPrice() view returns (uint256)",
@@ -43,8 +48,9 @@ export const CONTRACT_ABIS = {
 
 export const CONTRACT_ADDRESSES = {
     DAYA_TOKEN: "0xb6FA6E89479C2A312B6BbebD3db06f4832CcE04A",
-    AIRDROP: "0xE406833d7f473B43FB2729C8d8D8D8FA3861Efc42b",
+    AIRDROP: "0xE406833d7f473B43FB2729C8d8D8FA3861Efc42b",
     STAKING: "0x9EDb752c8Afae710c637Fe08ca0f822AEaEcbE8D",
+    VESTING: "0x9cd187f6bCf624c230d21de05Df7d23343Dea16A",
     PRICE_ORACLE: "0x54dcd3d9fc04f94451b386bf656d4c7804be98d4",
     STAKING_LIMITS: "0x8c6ef5cec6cf374f037be1cf22bb576e25a7a2ed",
 };

@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Coins, ChevronRight, Lock, Unlock, Zap, Info, Wallet } from 'lucide-react';
 import { useAccount, useConnect, useConnectors } from 'wagmi';
 import { useStaking } from '../hooks/useStaking';
 import { ethers } from 'ethers';
+import { CONTRACT_ADDRESSES, CONTRACT_ABIS, NETWORK_CONFIG } from '../config/constants';
 
-const tiers = [
-    { period: 30, apy: 8, label: 'Bronze' },
-    { period: 90, apy: 12, label: 'Silver' },
-    { period: 180, apy: 15, label: 'Gold' },
-    { period: 365, apy: 20, label: 'Platinum' },
+interface StakingTierData {
+    period: number;
+    apy: number;
+    label: string;
+}
+
+const TIER_LABELS = ['Bronze', 'Silver', 'Gold', 'Platinum'];
+const FALLBACK_TIERS: StakingTierData[] = [
+    { period: 30, apy: 10, label: 'Bronze' },
+    { period: 90, apy: 15, label: 'Silver' },
+    { period: 180, apy: 20, label: 'Gold' },
+    { period: 365, apy: 30, label: 'Platinum' },
 ];
+
+function cn(...inputs: (string | boolean | undefined | null)[]) {
+    return inputs.filter(Boolean).join(' ');
+}
 
 export const Staking: React.FC = () => {
     const { isConnected } = useAccount();
@@ -19,6 +31,43 @@ export const Staking: React.FC = () => {
     const { stakeInfo, isLoading, stake, unstake } = useStaking();
     const [amount, setAmount] = useState('');
     const [selectedTier, setSelectedTier] = useState(0);
+    const [tiers, setTiers] = useState<StakingTierData[]>(FALLBACK_TIERS);
+    const [penaltyPercent, setPenaltyPercent] = useState(25); // fallback
+
+    // Fetch real tiers and penalty from contract
+    const fetchContractData = useCallback(async () => {
+        try {
+            const provider = new ethers.JsonRpcProvider(NETWORK_CONFIG.rpcUrl);
+            const contract = new ethers.Contract(
+                CONTRACT_ADDRESSES.STAKING,
+                CONTRACT_ABIS.STAKING,
+                provider
+            );
+
+            const [contractTiers, penaltyBps] = await Promise.all([
+                contract.getStakingTiers(),
+                contract.earlyUnstakePenaltyBps(),
+            ]);
+
+            if (contractTiers && contractTiers.length > 0) {
+                const parsedTiers: StakingTierData[] = contractTiers.map((tier: any, i: number) => ({
+                    period: Number(tier.period),
+                    apy: Number(tier.apyBps) / 100, // Convert basis points to percentage
+                    label: TIER_LABELS[i] || `Tier ${i + 1}`,
+                }));
+                setTiers(parsedTiers);
+            }
+
+            setPenaltyPercent(Number(penaltyBps) / 100);
+        } catch (err) {
+            console.error('Error fetching staking contract data:', err);
+            // Keep fallback values
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchContractData();
+    }, [fetchContractData]);
 
     const handleStake = async () => {
         if (!amount || isNaN(Number(amount))) return;
@@ -36,7 +85,7 @@ export const Staking: React.FC = () => {
         <section id="staking" className="py-24">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
-                    <motion.h2 
+                    <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -58,7 +107,7 @@ export const Staking: React.FC = () => {
                                     <Zap size={20} className="text-orange-500 mr-2" />
                                     Choose Your Tier
                                 </h3>
-                                
+
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                                     {tiers.map((tier, i) => (
                                         <button
@@ -66,8 +115,8 @@ export const Staking: React.FC = () => {
                                             onClick={() => setSelectedTier(i)}
                                             className={cn(
                                                 "p-4 rounded-2xl border transition-all text-center group",
-                                                selectedTier === i 
-                                                    ? "bg-orange-500 border-orange-500 text-black shadow-lg shadow-orange-500/20" 
+                                                selectedTier === i
+                                                    ? "bg-orange-500 border-orange-500 text-black shadow-lg shadow-orange-500/20"
                                                     : "bg-black/40 border-gray-800 text-gray-400 hover:border-orange-500/30"
                                             )}
                                         >
@@ -82,8 +131,8 @@ export const Staking: React.FC = () => {
                                     <div className="relative">
                                         <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 px-1">Amount to Stake</label>
                                         <div className="relative">
-                                            <input 
-                                                type="text" 
+                                            <input
+                                                type="text"
                                                 value={amount}
                                                 onChange={(e) => setAmount(e.target.value)}
                                                 placeholder="0.00"
@@ -94,7 +143,7 @@ export const Staking: React.FC = () => {
                                     </div>
 
                                     {!isConnected ? (
-                                        <button 
+                                        <button
                                             onClick={() => connect({ connector: connectors[0] })}
                                             className="w-full bg-white text-black font-black py-4 rounded-2xl flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95 transition-all"
                                         >
@@ -102,7 +151,7 @@ export const Staking: React.FC = () => {
                                             <span>CONNECT WALLET TO STAKE</span>
                                         </button>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={handleStake}
                                             disabled={isLoading || !amount}
                                             className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-black py-4 rounded-2xl text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-orange-500/20 disabled:opacity-50"
@@ -116,7 +165,7 @@ export const Staking: React.FC = () => {
                             <div className="bg-orange-500/5 rounded-2xl p-6 border border-orange-500/10 flex items-start space-x-4">
                                 <Info size={20} className="text-orange-500 flex-shrink-0 mt-1" />
                                 <p className="text-xs text-orange-200/60 leading-relaxed font-bold">
-                                    Staking your tokens locks them for the selected period. Early unstaking is subject to a 25% penalty. 
+                                    Staking your tokens locks them for the selected period. Early unstaking is subject to a {penaltyPercent}% penalty.
                                     Rewards are calculated based on the APY of your chosen tier.
                                 </p>
                             </div>
@@ -126,7 +175,7 @@ export const Staking: React.FC = () => {
                         <div className="lg:col-span-5">
                             <div className="bg-gradient-to-br from-gray-900 to-black rounded-[32px] p-8 border border-gray-800 h-full relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -z-10 group-hover:bg-orange-500/10 transition-all"></div>
-                                
+
                                 <h3 className="text-xl font-black text-white mb-10 flex items-center">
                                     <Coins size={20} className="text-orange-500 mr-2" />
                                     Your Staking Info
@@ -146,11 +195,11 @@ export const Staking: React.FC = () => {
                                             </div>
                                             <div className="bg-black/40 p-5 rounded-2xl border border-white/5">
                                                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">APY</div>
-                                                <div className="text-xl font-black text-blue-500">{tiers[stakeInfo.tierIndex || 0].apy}%</div>
+                                                <div className="text-xl font-black text-blue-500">{tiers[stakeInfo.tierIndex || 0]?.apy ?? '—'}%</div>
                                             </div>
                                         </div>
 
-                                        <button 
+                                        <button
                                             onClick={unstake}
                                             disabled={isLoading}
                                             className="w-full flex items-center justify-center space-x-3 bg-white/5 hover:bg-white/10 text-white font-black py-4 rounded-2xl transition-all border border-white/5"
@@ -175,7 +224,3 @@ export const Staking: React.FC = () => {
         </section>
     );
 };
-
-function cn(...inputs: any[]) {
-    return inputs.filter(Boolean).join(' ');
-}

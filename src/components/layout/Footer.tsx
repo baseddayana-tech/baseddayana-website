@@ -41,11 +41,11 @@ export const Footer: React.FC = () => {
           <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-900 to-transparent mb-12"></div>
 
           <div className="flex flex-col md:flex-row justify-between items-center w-full text-sm text-gray-500 font-bold tracking-tighter">
-            <p>COPYRIGHT © 2025 BASED DAYANA. ALL RIGHTS RESERVED.</p>
+            <p>COPYRIGHT © {new Date().getFullYear()} BASED DAYANA. ALL RIGHTS RESERVED.</p>
             <div className="flex space-x-8 mt-4 md:mt-0">
-                <a href="#" className="hover:text-orange-500 transition-colors">TERMS OF USE</a>
-                <a href="#" className="hover:text-orange-500 transition-colors">PRIVACY POLICY</a>
-                <a href="https://basescan.org" target="_blank" className="text-blue-500/50 hover:text-blue-500 transition-colors">POWERED BY BASE</a>
+              <a href="#" className="hover:text-orange-500 transition-colors">TERMS OF USE</a>
+              <a href="#" className="hover:text-orange-500 transition-colors">PRIVACY POLICY</a>
+              <a href="https://basescan.org" target="_blank" className="text-blue-500/50 hover:text-blue-500 transition-colors">POWERED BY BASE</a>
             </div>
           </div>
         </div>

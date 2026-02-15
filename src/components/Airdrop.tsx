@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Wallet, ShieldAlert, Check, Wind } from 'lucide-react';
 import { useAccount, useConnect, useConnectors } from 'wagmi';
 import { useAirdrop } from '../hooks/useAirdrop';
+import { useAirdropStatus } from '../hooks/useAirdropStatus';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -15,22 +16,28 @@ export const Airdrop: React.FC = () => {
     const { connect } = useConnect();
     const connectors = useConnectors();
     const { isClaimed, isLoading, claim } = useAirdrop();
-    const [claimAmount] = useState('10000'); // Example amount
-    const [proof] = useState<string[]>([]); // This would normally come from an API
+    const { status: airdropStatus } = useAirdropStatus();
 
     const handleClaim = async () => {
+        // Note: In production, the amount and proof should come from an API
+        // that generates merkle proofs for eligible addresses
         try {
-            await claim(claimAmount, proof);
+            console.warn('Airdrop claim requires a valid merkle proof from the distribution API');
         } catch (error) {
             console.error('Claim failed:', error);
         }
     };
 
+    const statusLabel = airdropStatus?.statusLabel ?? 'Loading...';
+    const deadlineDisplay = airdropStatus?.deadlineDisplay ?? 'Loading...';
+    const statusColor = airdropStatus?.isActive ? 'text-green-500' :
+        airdropStatus?.statusLabel === 'Ended' ? 'text-red-500' : 'text-yellow-500';
+
     return (
         <section id="airdrop" className="py-24 bg-gradient-to-b from-gray-900/50 to-black">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
-                    <motion.h2 
+                    <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -45,9 +52,9 @@ export const Airdrop: React.FC = () => {
 
                 <div className="grid md:grid-cols-3 gap-6 mb-12">
                     {[
-                        { title: 'Airdrop Status', val: 'Active', icon: CheckCircle2, sub: 'Current campaign status', color: 'text-green-500' },
-                        { title: 'Your Eligibility', val: isConnected ? `${claimAmount} DAYA` : 'Connect Wallet', icon: Wind, sub: 'Tokens available to claim', color: 'text-orange-500' },
-                        { title: 'Claim Deadline', val: '45 Days Left', icon: Clock, sub: 'Time remaining to claim', color: 'text-blue-500' },
+                        { title: 'Airdrop Status', val: statusLabel, icon: CheckCircle2, sub: 'Current campaign status', color: statusColor },
+                        { title: 'Your Eligibility', val: isConnected ? 'Check Below' : 'Connect Wallet', icon: Wind, sub: 'Connect to verify eligibility', color: 'text-orange-500' },
+                        { title: 'Claim Deadline', val: deadlineDisplay, icon: Clock, sub: 'Time remaining to claim', color: 'text-blue-500' },
                     ].map((card, i) => (
                         <motion.div
                             key={card.title}
@@ -71,12 +78,12 @@ export const Airdrop: React.FC = () => {
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div>
                             <h3 className="text-2xl font-black text-white mb-8">Claim Your Airdrop</h3>
-                            
+
                             {!isConnected ? (
                                 <div className="text-center py-10 bg-black/40 rounded-3xl border border-dashed border-gray-700">
                                     <Wallet size={48} className="text-gray-600 mb-4 mx-auto" />
                                     <p className="text-gray-400 mb-8 font-bold">Connect your wallet to check eligibility</p>
-                                    <button 
+                                    <button
                                         onClick={() => connect({ connector: connectors[0] })}
                                         className="bg-orange-500 text-black px-8 py-3 rounded-full font-black text-sm hover:scale-105 transition-all"
                                     >
@@ -95,8 +102,8 @@ export const Airdrop: React.FC = () => {
                                 <div className="space-y-6">
                                     <div className="bg-black/60 rounded-3xl p-6 border border-white/5 space-y-4">
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="text-gray-500 font-bold uppercase">Claimable Amount</span>
-                                            <span className="text-white font-black">{claimAmount} DAYA</span>
+                                            <span className="text-gray-500 font-bold uppercase">Status</span>
+                                            <span className={cn("font-black", statusColor)}>{statusLabel}</span>
                                         </div>
                                         <div className="h-px bg-white/5 w-full"></div>
                                         <div className="flex justify-between items-center text-sm">
@@ -104,13 +111,13 @@ export const Airdrop: React.FC = () => {
                                             <span className="text-blue-500 font-black">Base Mainnet</span>
                                         </div>
                                     </div>
-                                    
-                                    <button 
+
+                                    <button
                                         onClick={handleClaim}
-                                        disabled={isLoading}
+                                        disabled={isLoading || !airdropStatus?.isActive}
                                         className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-black font-black py-5 rounded-2xl text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-orange-500/20 disabled:opacity-50"
                                     >
-                                        {isLoading ? 'PROCESSING...' : 'CLAIM AIRDROP NOW'}
+                                        {isLoading ? 'PROCESSING...' : !airdropStatus?.isActive ? 'AIRDROP NOT ACTIVE' : 'CLAIM AIRDROP NOW'}
                                     </button>
                                     <div className="flex items-center justify-center space-x-2 text-[10px] text-gray-500 font-bold">
                                         <ShieldAlert size={12} />

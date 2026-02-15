@@ -7,8 +7,7 @@ export const config = createConfig({
   connectors: [
     injected(),
     coinbaseWallet({ appName: 'Based Dayana' }),
-    // Replace with your own WalletConnect projectId
-    walletConnect({ projectId: '3fcc6b4440003df2436d4f8842af5646' }), 
+    walletConnect({ projectId: '3fcc6b4440003df2436d4f8842af5646' }),
   ],
   transports: {
     [base.id]: http(),

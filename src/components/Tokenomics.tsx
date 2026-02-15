@@ -1,22 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-const stats = [
-  { label: 'Total Supply', value: '1B $DAYA' },
-  { label: 'Buy/Sell Tax', value: '0% / 0%' },
-  { label: 'Liquidity', value: 'Community-Funded' },
-];
+import { useTokenInfo } from '../hooks/useTokenInfo';
 
 export const Tokenomics: React.FC = () => {
+  const { tokenInfo } = useTokenInfo();
+
+  const stats = [
+    { label: 'Total Supply', value: tokenInfo?.totalSupply ?? 'Loading...' },
+    { label: 'Buy/Sell Tax', value: '0% / 0%' },
+    { label: 'Liquidity', value: 'Community-Funded' },
+  ];
+
   return (
     <section id="tokenomics" className="py-24">
       <div className="container mx-auto px-4 text-center">
         <div className="flex items-center justify-center gap-6 mb-16">
-          <img src="/public/images/tok.svg" alt="Tokenomics" className="w-16 h-16 animate-pulse" 
-               onError={(e) => e.currentTarget.src = "/images/logo.png"} />
+          <img src="/images/tok.svg" alt="Tokenomics" className="w-16 h-16 animate-pulse"
+            onError={(e) => e.currentTarget.src = "/images/logo.png"} />
           <h2 className="text-4xl md:text-5xl font-black">Tokenomics</h2>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {stats.map((stat, index) => (
             <motion.div
