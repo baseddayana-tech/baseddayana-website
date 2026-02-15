@@ -48,6 +48,12 @@ export const Footer: React.FC = () => {
               <a href="https://basescan.org" target="_blank" className="text-blue-500/50 hover:text-blue-500 transition-colors">POWERED BY BASE</a>
             </div>
           </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-700 font-serif italic tracking-wide">
+              In loving memory of Dayana 🌹
+            </p>
+          </div>
         </div>
       </div>
     </footer>

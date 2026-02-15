@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { Menu, X, Wallet, ChevronDown, LayoutDashboard, Shield, Coins, Settings, Wind } from 'lucide-react';
+import { Menu, X, Wallet, ChevronDown, LayoutDashboard, Shield, Coins, Settings, Wind, FileText } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -15,6 +15,7 @@ const navLinks = [
   { name: 'Airdrop', href: '#airdrop', icon: Wind },
   { name: 'Security', href: '#security', icon: Shield },
   { name: 'Tokenomics', href: '#tokenomics', icon: Coins },
+  { name: 'Whitepaper', href: 'https://github.com/baseddayana-tech/baseddayana-website/blob/main/WHITEPAPER.md', icon: FileText },
 ];
 
 export const Header: React.FC = () => {
