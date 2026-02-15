@@ -22,7 +22,6 @@ dist-ssr
 /new_file.txt
 /logo.png
 /daya_logo_*.png
-/tsconfig.app.json
 
 # Editor
 .vscode/*
