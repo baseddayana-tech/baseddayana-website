@@ -64,13 +64,13 @@ jobs:
             ./dist/ \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/dist/
 
-          # Copy key files from dist to document root for Apache serving
+          # Copy built files from dist to document root for Apache serving
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
             "cd ${{ secrets.DEPLOY_PATH }} && \
              cp -f dist/index.html index.html && \
-             cp -rf dist/assets/ assets/ && \
-             cp -rf dist/images/ images_tmp/ && cp -af images_tmp/* images/ && rm -rf images_tmp/ && \
+             rm -rf assets/ && cp -r dist/assets/ assets/ && \
+             mkdir -p images/ && cp -af dist/images/* images/ 2>/dev/null; \
              echo 'Deploy complete at $(date)'"
 
       - name: Cleanup
